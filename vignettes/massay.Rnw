@@ -63,7 +63,7 @@ subsetBySample(lHub, 1:10)
 
 \section{Session information}
 
-<<sessionInfo,results=tex>>=
+<<sessionInfo,results=tex,echo=FALSE>>=
 toLatex(sessionInfo())
 @
 
