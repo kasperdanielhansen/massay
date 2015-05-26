@@ -1,0 +1,10 @@
+Package: massay
+Title: classes and functions for managing multiple assays on set of samples
+Version: 0.0.1
+Author: Kasper D. Hansen, Levi Waldron, Vince Carey, Martin Morgan
+Description: classes and functions for managing multiple assays on set of samples
+Suggests: BiocStyle, 
+Depends: R (>= 3.2), Biobase (>= 2.21.5), GenomicRanges (>= 1.13.35), BiocGenerics, SummarizedExperiment
+Maintainer: Kasper D Hansen <khansen@jhsph.edu>
+License: Artistic-2.0
+LazyLoad: yes

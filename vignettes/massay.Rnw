@@ -1,0 +1,70 @@
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\begin{document}
+
+\title{massay}
+\author{Bioconductor MultiAssay SIG}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+An increasingly common use case involves a set of samples or patients who provide measurements on
+multiple data types, such as gene expression, genotype, miRNA abundance.  It will frequently be the
+case that not all samples will contribute to all assays, so some sparsity in the set of samples
+$\times$ assays is expected.
+
+<<>>=
+library(massay)
+@ 
+
+\section{Basic demonstrative resources}
+
+\subsubsection*{Creating an ExperimentHub}
+
+This should be done using constructors:
+
+<<createeHub>>=
+rdas <- list.files(system.file("extdata/tcga_ov", package="biocMultiAssay"), pattern = "\\.rda$", full = TRUE)
+basename(rdas)
+pheno <- grep("phenodata\\.rda$", rdas, value = TRUE)
+rdas <- rdas[ - grep("phenodata\\.rda$", rdas)]
+tags <- sub("\\.rda", "", basename(rdas))
+eList <- lapply(seq(along = rdas), function(ii) {
+    new("SerializedExperiment", serType = "RData", assayPath = rdas[ii], tag = tags[ii], sampleDataPath = rdas[ii])
+})
+eHub <- new("ExperimentHub", hub = eList, masterSampleData = as(get(load(pheno)), "DataFrame"))
+@
+
+\subsubsection*{Loading an ExperimentHub}
+
+<<view>>=
+eHub
+@
+
+<<loadHub>>=
+lHub <- loadHub(eHub)
+lHub
+@ 
+
+(Want to support loading of only parts of the hub).
+
+\subsubsection*{Subsetting an ExperimentHub}
+
+<<subsetBySample>>=
+subsetBySample(lHub, 1:10)
+@ 
+
+
+\section{Session information}
+
+<<sessionInfo,results=tex>>=
+toLatex(sessionInfo())
+@
+
+\end{document}
