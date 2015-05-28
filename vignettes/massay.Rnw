@@ -38,7 +38,7 @@ tags <- sub("\\.rda", "", basename(rdas))
 eList <- lapply(seq(along = rdas), function(ii) {
     new("SerializedExperiment", serType = "RData", assayPath = rdas[ii], tag = tags[ii], sampleDataPath = rdas[ii])
 })
-eHub <- new("ExperimentHub", hub = eList, masterSampleData = as(get(load(pheno)), "DataFrame"))
+eHub <- new("ExperimentHub", hub = eList, masterSampleData = as(get(load(pheno)), "Data Frame"))
 @
 
 \subsubsection*{Loading an ExperimentHub}

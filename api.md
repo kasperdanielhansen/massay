@@ -1,5 +1,17 @@
 # An API for multassay containers
 
+eHub is a multiassay container representing a number of assays with corresponding Bioconductor classes.
+
+The first design attempt centers around encapsulating entire Bioconductor classes inside an eHub.  There are advantages to this (no coersion for example) and disadvantages (duplication of information).
+
+The assays can be linked by samples or by features.
+
+Insight: any feature linking we have discussed ultimately reduces to linking certain features of one assay to another.  We can represent this by a Hits object from IRanges.  I think this abstraction is general enough to cover most cases.  We have two possibilities
+(1) The Hits object gets constructed on the fly
+(2) The Hits object is stored inside eHub
+We need to allow for (2).  Some assay linking (say proteins to genes or microRNA to genes) are too complicated to do on the fly.  However, this means the number of links in worst case scales as nAssays^2.
+
+
 MAC is a multiassay container representing a number of assays with corresponding Bioconductor
 classes.
 

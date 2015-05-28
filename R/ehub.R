@@ -90,7 +90,7 @@ setMethod("show", "ExperimentHub", function(object) {
 })
 
 loadHub <- function(hub) {
-    stopifnot(is(hub, "ExperimentHub"))
+    .assertExperimentHub(object)
     obj <- lapply(hub@hub, loadExperiment)
     names(obj) <- sapply(hub@hub, function(x) x@tag)
     hub@hub <- obj
@@ -104,7 +104,18 @@ setMethod("sampleNames", "ExperimentHub", function(object) {
     rownames(pData(object))
 })
 
+getTag <- function(object) {
+    .assertExperiment(object)
+    object@tag
+}
+
+getTags <- function(object) {
+    .assertExperimentHub(object)
+    sapply(object@ehub, getTag)
+}
+
 subsetBySample <- function(object, j, drop = FALSE) {
+    .assertExperimentHub(object)
     if(is.numeric(j)) {
         j <- sampleNames(object)[j]
     }
@@ -117,24 +128,23 @@ subsetBySample <- function(object, j, drop = FALSE) {
     object
 }
 
+selectAssays <- function(object, i) {
+    .assertExperimentHub(object)
+    if(is.character(i)) {
+        i <- match(i, getTags(object))
+    }
+    ## FIXME: links needs to be subsetted
+    ## FIXME: should we subset masterSampleData?
+    new("ExperimentHub", hub = object@hub[i], links = object@links,
+        metadata = object@metadata, masterSampleData = masterSampleData)
+}
 
-
-
-
-
-## setGeneric("featExtractor", function(x) standardGeneric("featExtractor"))
-## setMethod("featExtractor", "ExpressionSet", function(x) featureNames(x))
-## setMethod("featExtractor", "SummarizedExperiment", function(x) rownames(x))
-
-## setMethod("show", "LoadedExperimentHub", function(object) {
-##  cat("LoadedExperimentHub instance.\n")
-##  dimmat = t(sapply(object@elist, dim))
-##  colnames(dimmat) = c("Features", "Samples") # dim for eSet nicer than for SE!
-##  featExemplars = lapply(object@elist, function(x) head(featExtractor(x),3))
-##  featExemplars = sapply(featExemplars, paste, collapse=", ")
-##  featExemplars = substr(featExemplars, 1, 25)
-##  featExemplars = paste(featExemplars, "...")
-##  dimmat = data.frame(dimmat, feats.=featExemplars)
-##  print(dimmat)
-## })
-
+getAssay <- function(object, i) {
+    .assertExperimentHub(object)
+    if(is.character(i)) {
+        i <- match(i, getTags(object))
+    }
+    .assertScalar(x)
+    object@hub[[i]]@experiment
+}
+    
