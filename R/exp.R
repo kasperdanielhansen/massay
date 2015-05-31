@@ -1,6 +1,10 @@
 setClassUnion("ValidMassayClasses",
               c("eSet", "SummarizedExperiment"))
 
+####################################################
+### SerializedExperiment
+####################################################
+
 setClass("SerializedExperiment", representation(
     tag = "character",
     serType = "character",
@@ -9,11 +13,31 @@ setClass("SerializedExperiment", representation(
 
 setMethod("show", "SerializedExperiment", function(object) {
     cat("An object of class 'SerializedExperiment'\n")
-    cat(" tag:", object@tag, "\n")
+    cat(" tag:", getTag(object), "\n")
     cat(" serType:", object@serType, "\n")
     cat(" assayPath:", object@assayPath, "\n")
     cat(" sampleDataPath:", object@sampleDataPath, "\n")
 })
+
+setMethod("getTag", "SerializedExperiment",
+          funtion(object, ...) {
+              object@tag
+          })
+
+loadExperiment <- function(object) {
+    if(is(object, "LoadedExperiment"))
+        return(object)
+    stopifnot(is(object, "SerializedExperiment"))
+    if(object@serType == "RData") {
+        ## Here we assume that anything stored as RData can be loaded as is
+        new("LoadedExperiment", tag = getTag(object), experiment = get(load(object@assayPath)))
+    }
+}
+
+
+####################################################
+### LoadedExperiment
+####################################################
 
 setClass("LoadedExperiment", representation(
     tag = "character",
@@ -22,64 +46,64 @@ setClass("LoadedExperiment", representation(
 
 setMethod("show", "LoadedExperiment", function(object) {
     cat("An object of class 'LoadedExperiment'\n")
-    cat(" tag:", object@tag, "\n")
-    cat(" class:", class(object@experiment), "\n")
+    cat(" tag:", getTag(object), "\n")
+    cat(" class:", class(getExperiment(object)), "\n")
     cat("-----\n")
-    show(object@experiment)
-})
+    show(getExperiment(object))
+    })
+          
+setMethod("getTag", "LoadedExperiment",
+          funtion(object, ...) {
+              object@tag
+          })
+
+getExperiment <- function(object) {
+    .assertExperiment(object)
+    object@experiment
+}
 
 setMethod("[", "LoadedExperiment", function(x, i, j, ..., drop = FALSE) {
     if(missing(i) && missing(j))
-        x@experiment <- x@experiment[...,drop=drop]
+        x@experiment <- getExperiment(x)[...,drop=drop]
     if(missing(i) && !missing(j))
-        x@experiment <- x@experiment[, j, ...,drop=drop]
+        x@experiment <- getExperiment(x)[, j, ...,drop=drop]
     if(!missing(i) && missing(j))
-        x@experiment <- x@experiment[i,,...,drop=drop]
+        x@experiment <- getExperiment(x)[i,,...,drop=drop]
     if(!missing(i) && !missing(j))
-        x@experiment <- x@experiment[i,j,...,drop=drop]
+        x@experiment <- getExperiment(x)[i,j,...,drop=drop]
     x
 })
 
 setMethod("sampleNames", "LoadedExperiment", function(object) {
-    if(hasMethod("sampleNames", class(object@experiment)))
-        return(sampleNames(object@experiment))
-    if(is(object, "SummarizedExperiment"))
-        return(colnames(object@experiment))
+    sampleNames(getExperiment(object))
 })
 
 
+setMethod("pData", "LoadedExperiment", function(object) {
+    pData(getExperiment(object))
+})
 
+setMethod("colData", "LoadedExperiment", function(object) {
+    colData(getExperiment(object))
+})
 
-
-
-
-loadExperiment <- function(object) {
-    if(is(object, "LoadedExperiment"))
-        return(object)
-    stopifnot(is(object, "SerializedExperiment"))
-    if(object@serType == "RData") {
-        ## Here we assume that anything stored as RData can be loaded as is
-        new("LoadedExperiment", tag = object@tag, experiment = get(load(object@assayPath)))
-    }
-}
-
+setMethod("ncol", "LoadedExperiment", function(x) {
+    ncol(getExperiment(x))
+})
+ 
 .short_print_Experiment <- function(object, space = " ") {
     if(is(object, "SerializedExperiment")) {
-        cat(sprintf("%s%s\n", space, object@tag))
+        cat(sprintf("%s%s\n", space, getTage(object)))
         cat(sprintf("%s SerializedExperiment (%s)\n", space, object@assayPath))
         return()
     }
     if(is(object, "LoadedExperiment")) {
-        cat(sprintf("%s%s\n", space, object@tag))
+        cat(sprintf("%s%s\n", space, getTag(object)))
         cat(sprintf("%s LoadedExperiment (%s | %d x %d)\n",
-                    space, class(object@experiment), nrow(object@experiment), ncol(object@experiment)))
+                    space, class(getExperiment(object)),
+                    nrow(getExperiment(object), ncol(object))))
         return()
     }
     stop("Unknown class")
-}
-
-getTag <- function(object) {
-    .assertExperiment(object)
-    object@tag
 }
 

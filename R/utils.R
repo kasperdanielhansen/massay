@@ -3,9 +3,9 @@
         stop("'object' needs to be of classes 'LoadedExperiment' or 'SerializedExperiment'")
 }
 
-.assertExperimentHub <- function(object) {
-    if(!is(object, "ExperimentHub"))
-        stop("'object' needs to be of class 'ExperimentHub'")
+.assertMultiAssayExperiment <- function(object) {
+    if(!is(object, "MultiAssayExperiment"))
+        stop("'object' needs to be of class 'MultiAssayExperiment'")
 }
 
 .assertScalar <- function(x) {
