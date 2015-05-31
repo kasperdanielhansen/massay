@@ -1,47 +1,71 @@
 ## A hub is just a collection of experiments
 
-setClass("ExperimentHub", representation(
-    hub = "list",
+setClass("MultiAssayExperiment", representation(
+    experiments = "list",
     links = "list",
     metadata = "ANY", ## Not sure we need this
-    masterSampleData = "DataFrame"))
+    sampleData = "DataFrame"))
 
-setMethod("show", "ExperimentHub", function(object) {
-    cat("ExperimentHub with", length(object@hub),
+getExperiments <- function(object) {
+    .assertMultiAssayExperiment(object)
+    object@experiments
+}
+
+getLinks <- function(object) {
+    .assertMultiAssayExperiment(object)
+    object@links
+}
+
+setMethod("show", "MultiAssayExperiment", function(object) {
+    cat("MultiAssayExperiment with", length(getExperiments(object)),
         "experiments.  User-defined tags:\n")
-    for(ii in seq(along = object@hub)) {
-        .short_print_Experiment(object@hub[[ii]]) 
+    for(ii in seq(along = getExperiments(object))) {
+        .short_print_Experiment(getExperiments(object)[[ii]]) 
     }
-    pd <- pData(object)
-    cat(sprintf("Sample level data is\n %d samples x %d covariates\n", nrow(pd), ncol(pd)))
+    cd <- colData(object)
+    cat(sprintf("Sample level data is\n %d samples x %d covariates\n", ncol(object), ncol()))
 })
 
-loadHub <- function(hub) {
-    .assertExperimentHub(object)
-    obj <- lapply(hub@hub, loadExperiment)
-    names(obj) <- sapply(hub@hub, function(x) x@tag)
-    hub@hub <- obj
-    hub
-}
-
-setMethod("pData", "ExperimentHub", function(object)
-    object@masterSampleData)
-
-setMethod("sampleNames", "ExperimentHub", function(object) {
-    rownames(pData(object))
+setMethod("colData", "MultiAssayExperiment", function(object) {
+    object@sampleData
 })
 
-getTags <- function(object) {
-    .assertExperimentHub(object)
-    sapply(object@ehub, getTag)
+getSampleData <- function(object) {
+    object@sampleData
+}
+              
+setMethod("ncol", "MultiAssayExperiment", function(x) {
+    nrow(colData(x))
+})
+
+setMethod("sampleNames", function(object) {
+    rownames(colData(object))
+})
+
+setMethod("getTag", function(object, i) {
+    if(missing(i))
+        sapply(getExperiments(object), slot, "tag")
+    else
+        getTag(getExperiments(object)[[i]])
+})
+
+loadExperiments <- function(mAexp) {
+    .assertMultiAssayExperiment(object)
+    obj <- lapply(getExperiments(mAexp), loadExperiment)
+    names(obj) <- getTag(mAexp)
+    mAexp@experiments <- obj
+    mAexp
 }
 
+
+## Subsetting / Selecting      
+          
 subsetBySample <- function(object, j, drop = FALSE) {
-    .assertExperimentHub(object)
+    .assertMultiAssayExperiment(object)
     if(is.numeric(j)) {
         j <- sampleNames(object)[j]
     }
-    object@hub <- lapply(object@hub, function(oo) {
+    object@experiments <- lapply(getExperiments(object), function(oo) {
         jj <- j[j %in% sampleNames(oo)]
         oo <- oo[,jj,drop = drop]
         oo
@@ -51,22 +75,22 @@ subsetBySample <- function(object, j, drop = FALSE) {
 }
 
 selectAssays <- function(object, i) {
-    .assertExperimentHub(object)
+    .assertMultiAssayExperiment(object)
     if(is.character(i)) {
         i <- match(i, getTags(object))
     }
     ## FIXME: links needs to be subsetted
     ## FIXME: should we subset masterSampleData?
-    new("ExperimentHub", hub = object@hub[i], links = object@links,
+    new("MultiAssayExperiment", experiments = getExperiments(object)[i], links = object@links,
         metadata = object@metadata, masterSampleData = masterSampleData)
 }
 
 getAssay <- function(object, i) {
-    .assertExperimentHub(object)
+    .assertMultiAssayExperiment(object)
     if(is.character(i)) {
         i <- match(i, getTags(object))
     }
     .assertScalar(x)
-    object@hub[[i]]@experiment
+    getExperiment(getExperiments(object)[[i]])
 }
     
