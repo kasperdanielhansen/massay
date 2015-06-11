@@ -57,10 +57,10 @@ setMethod("getTag", "LoadedExperiment",
               object@tag
           })
 
-getExperiment <- function(object) {
-    .assertExperiment(object)
-    object@experiment
-}
+setMethod("getExperiment", "LoadedExperiment",
+          function(object, ...) {
+              object@experiment
+          })
 
 setMethod("[", "LoadedExperiment", function(x, i, j, ..., drop = FALSE) {
     if(missing(i) && missing(j))

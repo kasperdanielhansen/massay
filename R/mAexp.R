@@ -3,7 +3,6 @@
 setClass("MultiAssayExperiment", representation(
     experiments = "list",
     links = "list",
-    metadata = "ANY", ## Not sure we need this
     sampleData = "DataFrame"))
 
 getExperiments <- function(object) {
@@ -72,23 +71,23 @@ subsetBySample <- function(object, j, drop = FALSE) {
     object
 }
 
-selectAssays <- function(object, i) {
+selectExperiments <- function(object, i) {
     .assertMultiAssayExperiment(object)
     if(is.character(i)) {
         i <- match(i, getTags(object))
     }
     ## FIXME: links needs to be subsetted
     ## FIXME: should we subset masterSampleData?
-    new("MultiAssayExperiment", experiments = getExperiments(object)[i], links = object@links,
-        metadata = object@metadata, sampleData = object@sampleData)
+    new("MultiAssayExperiment", experiments = getExperiments(object)[i],
+        links = object@links, sampleData = object@sampleData)
 }
 
-getAssay <- function(object, i) {
-    .assertMultiAssayExperiment(object)
-    if(is.character(i)) {
-        i <- match(i, getTags(object))
-    }
-    .assertScalar(x)
-    getExperiment(getExperiments(object)[[i]])
-}
+setMethod("getExperiment", "MultiAssayExperiment",
+          function(object, i, ...) {
+              if(is.character(i)) {
+                  i <- match(i, getTags(object))
+              }
+              .assertScalar(i)
+              getExperiment(getExperiments(object)[[i]])
+          })
     

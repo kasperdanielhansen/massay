@@ -60,6 +60,16 @@ mAexp
 subsetBySample(mAexp, 1:10)
 @ 
 
+<<selectExperiments>>=
+selectExperiments(mAexp, 1:3)
+## Should implement tag subsetting
+@ 
+
+<<>>=
+getExperiment(mAexp, 1)
+getExperiment(mAexp, "TCGA.RNASeqV2_eset")
+@ 
+
 
 \section{Session information}
 
