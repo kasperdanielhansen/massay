@@ -71,10 +71,11 @@ subsetBySample <- function(object, j, drop = FALSE) {
     object
 }
 
-selectExperiments <- function(object, i) {
-    .assertMultiAssayExperiment(object)
+subsetByExperiment <- function(object, i) {
+    massay:::.assertMultiAssayExperiment(object)
+    if(missing(i)) return(object)
     if(is.character(i)) {
-        i <- match(i, getTags(object))
+        i <- match(i, getTag(object))
     }
     ## FIXME: links needs to be subsetted
     ## FIXME: should we subset masterSampleData?
@@ -90,4 +91,4 @@ setMethod("getExperiment", "MultiAssayExperiment",
               massay:::.assertScalar(i)
               getExperiment(getExperiments(object)[[i]])
           })
-    
+

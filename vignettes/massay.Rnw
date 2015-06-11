@@ -56,17 +56,22 @@ mAexp
 
 \subsubsection*{Subsetting a MultiAssayExperiment}
 
+This is simple sample subsetting.
+
 <<subsetBySample>>=
-subsetBySample(mAexp, 1:10)
+invisible(subsetBySample(mAexp, 1:10))
+subsetBySample(mAexp, sampleNames(mAexp)[1:10])
 @ 
 
-<<selectExperiments>>=
-selectExperiments(mAexp, 1:3)
-## Should implement tag subsetting
+
+
+<<subsetByExperiment>>=
+invisible(subsetByExperiment(mAexp, 1:3))
+subsetByExperiment(mAexp, getTag(mAexp)[1:3])
 @ 
 
-<<>>=
-getExperiment(mAexp, 1)
+<<getExperiment>>=
+invisible(getExperiment(mAexp, 1))
 getExperiment(mAexp, "TCGA.RNASeqV2_eset")
 @ 
 
