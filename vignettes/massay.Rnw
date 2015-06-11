@@ -38,18 +38,18 @@ tags <- sub("\\.rda", "", basename(rdas))
 eList <- lapply(seq(along = rdas), function(ii) {
     new("SerializedExperiment", serType = "RData", assayPath = rdas[ii], tag = tags[ii], sampleDataPath = rdas[ii])
 })
-eHub <- new("ExperimentHub", hub = eList, masterSampleData = as(get(load(pheno)), "Data Frame"))
+mAexp <- new("MultiAssayExperiment", experiments = eList, sampleData = as(get(load(pheno)), "DataFrame"))
 @
 
 \subsubsection*{Loading an ExperimentHub}
 
 <<view>>=
-eHub
+mAexp
 @
 
 <<loadHub>>=
-lHub <- loadHub(eHub)
-lHub
+mAexp <- loadExperiments(mAexp)
+mAexp
 @ 
 
 (Want to support loading of only parts of the hub).
@@ -57,7 +57,7 @@ lHub
 \subsubsection*{Subsetting an ExperimentHub}
 
 <<subsetBySample>>=
-subsetBySample(lHub, 1:10)
+subsetBySample(mAexp, 1:10)
 @ 
 
 

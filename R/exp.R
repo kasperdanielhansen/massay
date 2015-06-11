@@ -20,7 +20,7 @@ setMethod("show", "SerializedExperiment", function(object) {
 })
 
 setMethod("getTag", "SerializedExperiment",
-          funtion(object, ...) {
+          function(object, ...) {
               object@tag
           })
 
@@ -53,7 +53,7 @@ setMethod("show", "LoadedExperiment", function(object) {
     })
           
 setMethod("getTag", "LoadedExperiment",
-          funtion(object, ...) {
+          function(object, ...) {
               object@tag
           })
 
@@ -83,17 +83,17 @@ setMethod("pData", "LoadedExperiment", function(object) {
     pData(getExperiment(object))
 })
 
-setMethod("colData", "LoadedExperiment", function(object) {
-    colData(getExperiment(object))
+setMethod("colData", "LoadedExperiment", function(x) {
+    colData(getExperiment(x))
 })
 
 setMethod("ncol", "LoadedExperiment", function(x) {
     ncol(getExperiment(x))
 })
  
-.short_print_Experiment <- function(object, space = " ") {
+short_print_Experiment <- function(object, space = " ") {
     if(is(object, "SerializedExperiment")) {
-        cat(sprintf("%s%s\n", space, getTage(object)))
+        cat(sprintf("%s%s\n", space, getTag(object)))
         cat(sprintf("%s SerializedExperiment (%s)\n", space, object@assayPath))
         return()
     }
@@ -101,7 +101,7 @@ setMethod("ncol", "LoadedExperiment", function(x) {
         cat(sprintf("%s%s\n", space, getTag(object)))
         cat(sprintf("%s LoadedExperiment (%s | %d x %d)\n",
                     space, class(getExperiment(object)),
-                    nrow(getExperiment(object), ncol(object))))
+                    nrow(getExperiment(object)), ncol(object)))
         return()
     }
     stop("Unknown class")

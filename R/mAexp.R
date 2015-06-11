@@ -22,12 +22,11 @@ setMethod("show", "MultiAssayExperiment", function(object) {
     for(ii in seq(along = getExperiments(object))) {
         .short_print_Experiment(getExperiments(object)[[ii]]) 
     }
-    cd <- colData(object)
-    cat(sprintf("Sample level data is\n %d samples x %d covariates\n", ncol(object), ncol()))
+    cat(sprintf("Sample level data is\n %d samples x %d covariates\n", ncol(object), ncol(colData(object))))
 })
 
-setMethod("colData", "MultiAssayExperiment", function(object) {
-    object@sampleData
+setMethod("colData", "MultiAssayExperiment", function(x) {
+    x@sampleData
 })
 
 getSampleData <- function(object) {
@@ -38,11 +37,11 @@ setMethod("ncol", "MultiAssayExperiment", function(x) {
     nrow(colData(x))
 })
 
-setMethod("sampleNames", function(object) {
+setMethod("sampleNames", "MultiAssayExperiment", function(object) {
     rownames(colData(object))
 })
 
-setMethod("getTag", function(object, i) {
+setMethod("getTag", "MultiAssayExperiment", function(object, i) {
     if(missing(i))
         sapply(getExperiments(object), slot, "tag")
     else
@@ -50,7 +49,7 @@ setMethod("getTag", function(object, i) {
 })
 
 loadExperiments <- function(mAexp) {
-    .assertMultiAssayExperiment(object)
+    .assertMultiAssayExperiment(mAexp)
     obj <- lapply(getExperiments(mAexp), loadExperiment)
     names(obj) <- getTag(mAexp)
     mAexp@experiments <- obj
