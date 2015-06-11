@@ -1,4 +1,4 @@
-setClassUnion("ValidMassayClasses",
+setClassUnion("ValidExperimentClasses",
               c("eSet", "SummarizedExperiment"))
 
 ####################################################
@@ -41,7 +41,7 @@ loadExperiment <- function(object) {
 
 setClass("LoadedExperiment", representation(
     tag = "character",
-    experiment = "ValidMassayClasses"))
+    experiment = "ValidExperimentClasses"))
 ## FIXME: Should we keep serType, assayPath around so we can unload?
 
 setMethod("show", "LoadedExperiment", function(object) {
@@ -90,8 +90,12 @@ setMethod("colData", "LoadedExperiment", function(x) {
 setMethod("ncol", "LoadedExperiment", function(x) {
     ncol(getExperiment(x))
 })
- 
-short_print_Experiment <- function(object, space = " ") {
+
+setMethod("nrow", "LoadedExperiment", function(x) {
+    nrow(getExperiment(x))
+})
+
+.short_print_Experiment <- function(object, space = " ") {
     if(is(object, "SerializedExperiment")) {
         cat(sprintf("%s%s\n", space, getTag(object)))
         cat(sprintf("%s SerializedExperiment (%s)\n", space, object@assayPath))
@@ -101,7 +105,7 @@ short_print_Experiment <- function(object, space = " ") {
         cat(sprintf("%s%s\n", space, getTag(object)))
         cat(sprintf("%s LoadedExperiment (%s | %d x %d)\n",
                     space, class(getExperiment(object)),
-                    nrow(getExperiment(object)), ncol(object)))
+                    nrow(object), ncol(object)))
         return()
     }
     stop("Unknown class")

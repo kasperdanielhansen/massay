@@ -1,3 +1,27 @@
+# Terminology
+
+We have a `MultiAssayExperiment`.  This is a collection of experiments of class `Experiment`.
+
+Each `Experiment` contains a standard Bioconductor class such as `ExpressionSet` or similar.  There is a set of possible classes that can be put inside an `Experiment`.  This is controlled by the class union `ValidExperimentClasses`.  To add a class to this union, it is required that the class supports a certain API which is still to be defined.  Currently, the class union consists of `eSet` and `SummarizedExperiment`.
+
+Furthermore, `Experiment` is actually of class `SerializedExperiment` (data on disk) or `LoadedExperiment` (data in memory).  Currently, we don't expect a serialized experiment to be able to do much more than load it; for example we cannot see the associated pheno data in any way.
+
+A `LoadedExperiment` is simple.  We have `@experiment` slot which directly contains the actualy underlying class and then there is a `@tag` (experiment name).  We will probably add a bit more going forward.
+
+A `MultiAssayExperiment` contains a list of `Experiment`s.
+
+## Terminology issues
+
+Current, I use "experiment" both for the class and its slot, so `getExperiment(LoadedExperiment)` will return for example an `ExpressionSet` or whatever is needed.
+
+## To do
+
+Currently no `Experiment` class; we should make it virtual.
+
+
+
+
+
 # An API for multassay containers
 
 eHub is a multiassay container representing a number of assays with corresponding Bioconductor classes.

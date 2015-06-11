@@ -17,12 +17,11 @@ getLinks <- function(object) {
 }
 
 setMethod("show", "MultiAssayExperiment", function(object) {
-    cat("MultiAssayExperiment with", length(getExperiments(object)),
-        "experiments.  User-defined tags:\n")
+    cat(sprintf("MultiAssayExperiment with\n %s experiments\n  %s samples\nUser-defined tags:\n",
+                length(getExperiments(object)), ncol(object)))
     for(ii in seq(along = getExperiments(object))) {
-        .short_print_Experiment(getExperiments(object)[[ii]]) 
+        massay:::.short_print_Experiment(getExperiments(object)[[ii]]) 
     }
-    cat(sprintf("Sample level data is\n %d samples x %d covariates\n", ncol(object), ncol(colData(object))))
 })
 
 setMethod("colData", "MultiAssayExperiment", function(x) {
@@ -69,7 +68,7 @@ subsetBySample <- function(object, j, drop = FALSE) {
         oo <- oo[,jj,drop = drop]
         oo
     })
-    object@masterSampleData <- object@masterSampleData[j,]
+    object@sampleData <- object@sampleData[j,]
     object
 }
 
@@ -81,7 +80,7 @@ selectAssays <- function(object, i) {
     ## FIXME: links needs to be subsetted
     ## FIXME: should we subset masterSampleData?
     new("MultiAssayExperiment", experiments = getExperiments(object)[i], links = object@links,
-        metadata = object@metadata, masterSampleData = masterSampleData)
+        metadata = object@metadata, sampleData = object@sampleData)
 }
 
 getAssay <- function(object, i) {
