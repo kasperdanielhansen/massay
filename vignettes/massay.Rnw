@@ -25,7 +25,7 @@ library(massay)
 
 \section{Basic demonstrative resources}
 
-\subsubsection*{Creating an ExperimentHub}
+\subsubsection*{Creating a MultiAssayExperiment}
 
 This should be done using constructors:
 
@@ -41,7 +41,7 @@ eList <- lapply(seq(along = rdas), function(ii) {
 mAexp <- new("MultiAssayExperiment", experiments = eList, sampleData = as(get(load(pheno)), "DataFrame"))
 @
 
-\subsubsection*{Loading an ExperimentHub}
+\subsubsection*{Loading a MultiAssayExperiment}
 
 <<view>>=
 mAexp
@@ -54,7 +54,7 @@ mAexp
 
 (Want to support loading of only parts of the hub).
 
-\subsubsection*{Subsetting an ExperimentHub}
+\subsubsection*{Subsetting a MultiAssayExperiment}
 
 <<subsetBySample>>=
 subsetBySample(mAexp, 1:10)
