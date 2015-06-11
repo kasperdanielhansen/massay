@@ -85,9 +85,9 @@ selectExperiments <- function(object, i) {
 setMethod("getExperiment", "MultiAssayExperiment",
           function(object, i, ...) {
               if(is.character(i)) {
-                  i <- match(i, getTags(object))
+                  i <- match(i, getTag(object))
               }
-              .assertScalar(i)
+              massay:::.assertScalar(i)
               getExperiment(getExperiments(object)[[i]])
           })
     
